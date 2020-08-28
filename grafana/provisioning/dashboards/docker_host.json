@@ -1,7 +1,7 @@
 {
   "id": null,
   "title": "Docker Host",
-  "description": "Docker host metrics",
+  "description": "The Docker Host Dashboard shows key metrics for monitoring the resource usage of your server",
   "tags": [
     "system"
   ],
@@ -477,7 +477,7 @@
           },
           "targets": [
             {
-              "expr": "sum(node_filesystem_free_bytes{fstype=\"aufs\"})",
+              "expr": "sum(node_filesystem_free_bytes{fstype=\"tmpfs\"})",
               "interval": "30s",
               "intervalFactor": 1,
               "legendFormat": "",

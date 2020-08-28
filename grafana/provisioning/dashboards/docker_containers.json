@@ -1,7 +1,7 @@
 {
   "id": null,
   "title": "Docker Containers",
-  "description": "Containers metrics",
+  "description": "The Docker Containers Dashboard shows key metrics for monitoring running containers",
   "tags": [
     "docker"
   ],

@@ -1,4 +1,4 @@
-version: "2.1"
+version: "3.8"
 
 networks:
   monitor-net:
@@ -25,7 +25,7 @@ services:
       - "--web.enable-lifecycle"
     restart: unless-stopped
     expose:
-      - 9090
+      - ${PROMETHEUS_PORT}
     networks:
       - monitor-net
     labels:
@@ -42,7 +42,7 @@ services:
       - "--storage.path=/alertmanager"
     restart: unless-stopped
     expose:
-      - 9093
+      - ${ALERTMANAGER_PORT}
     networks:
       - monitor-net
     labels:
@@ -62,7 +62,7 @@ services:
       - "--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)"
     restart: unless-stopped
     expose:
-      - 9100
+      - ${NODE_EXPORTER_PORT}
     networks:
       - monitor-net
     labels:
@@ -76,10 +76,10 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-      - /cgroup:/cgroup:ro # only for Linux
+      - /cgroup:/cgroup:ro
     restart: unless-stopped
     expose:
-      - 8080
+      - ${CADVISOR_PORT}
     networks:
       - monitor-net
     labels:
@@ -92,11 +92,12 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
     env_file:
       - .env
     restart: unless-stopped
     expose:
-      - 3000
+      - ${GRAFANA_PORT}
     networks:
       - monitor-net
     labels:
@@ -107,29 +108,25 @@ services:
     container_name: pushgateway
     restart: unless-stopped
     expose:
-      - 9091
+      - ${PUSHGATEWAY_PORT}
     networks:
       - monitor-net
     labels:
       org.label-schema.group: "monitoring"
-  
+
   nginx:
     build:
       context: ./nginx/
       dockerfile: nginx.dockerfile
     container_name: nginx
     ports:
-      - "80:80"
-      - "3000:3000"
-      - "9090:9090"
-      - "9093:9093"
-      - "9091:9091"
-    # volumes:
-    #   - ./nginx/default.conf:/etc/nginx/templates/default.conf.template
-    #   - ./nginx/.htpasswd:/etc/nginx/.htpasswd
+      - ${HTTP_PORT}:${HTTP_PORT}
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+      - ${PUSHGATEWAY_PORT}:${PUSHGATEWAY_PORT}
+      - ${ALERTMANAGER_PORT}:${ALERTMANAGER_PORT}
     restart: unless-stopped
-    # depends_on:
-    #   - grafana
+    depends_on:
+      - grafana
     env_file: .env
     networks:
       - monitor-net
