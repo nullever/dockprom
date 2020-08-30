@@ -7,6 +7,7 @@ networks:
 volumes:
   prometheus_data: {}
   grafana_data: {}
+  nginx_logs: {}
 
 services:
   prometheus:
@@ -119,6 +120,8 @@ services:
       context: ./nginx/
       dockerfile: nginx.dockerfile
     container_name: nginx
+    volumes:
+      - nginx_logs:/var/logs/nginx
     ports:
       - ${HTTP_PORT}:${HTTP_PORT}
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}

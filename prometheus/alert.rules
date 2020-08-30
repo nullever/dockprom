@@ -1,5 +1,5 @@
 groups:
-- name: targets
+- name: monitor_services
   rules:
   - alert: monitor_service_down
     expr: up == 0
@@ -10,11 +10,11 @@ groups:
       summary: "Monitor service non-operational"
       description: "Service {{ $labels.instance }} is down."
 
-- name: host
+- name: docker_host
   rules:
   - alert: high_cpu_load
     expr: node_load1 > 1.5
-    for: 30s
+    for: 10s
     labels:
       severity: warning
     annotations:
@@ -39,11 +39,11 @@ groups:
       summary: "Server storage is almost full"
       description: "Docker host storage usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 
-- name: containers
+- name: docker_containers
   rules:
   - alert: jenkins_down
     expr: absent(container_memory_usage_bytes{name="jenkins"})
-    for: 30s
+    for: 10s
     labels:
       severity: critical
     annotations:
@@ -52,7 +52,7 @@ groups:
 
   - alert: jenkins_high_cpu
     expr: sum(rate(container_cpu_usage_seconds_total{name="jenkins"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 10
-    for: 30s
+    for: 10s
     labels:
       severity: warning
     annotations:
@@ -61,7 +61,7 @@ groups:
 
   - alert: jenkins_high_memory
     expr: sum(container_memory_usage_bytes{name="jenkins"}) > 1200000000
-    for: 30s
+    for: 10s
     labels:
       severity: warning
     annotations:
