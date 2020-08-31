@@ -5,3 +5,4 @@
 .env
 /nginx/.htpasswd
 /nginx/dhparam.pem
+chmod.txt
